@@ -1,0 +1,30 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: metabase-proxy
+  namespace: nada
+  labels:
+    team: nada
+spec:
+  image: {{image}}
+  port: 8080
+  replicas:
+    min: 2
+    max: 3
+    cpuThresholdPercentage: 70
+  env:
+    - name: CERT_PATH
+      value: "/etc/pki/tls/cacert.pem"
+    - name: HOST
+      value: {{host}}
+  ingresses:
+  {{#each ingress}}
+    - {{.}}
+  {{/each}}
+  resources:
+    limits:
+      cpu: 400m
+      memory: 512Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi

@@ -1,0 +1,6 @@
+host: metabase-inside.dev.intern.nav.no
+ingress:
+  - https://data.dev.intern.nav.no/public
+  - https://data.dev.intern.nav.no/app
+  - https://data.dev.intern.nav.no/api/session/properties
+  - https://data.dev.intern.nav.no/api/public
