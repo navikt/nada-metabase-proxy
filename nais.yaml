@@ -28,3 +28,27 @@ spec:
     requests:
       cpu: 50m
       memory: 128Mi
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: metabase-proxy-alert
+  namespace: nada
+  labels:
+    team: nada
+spec:
+  groups:
+  - name: metabase-proxy-alert
+    rules:
+    - alert: InstanceDown
+      expr: kube_deployment_status_replicas_available{namespace="nada", deployment="metabase-proxy"} == 0
+      for: 2m
+      annotations:
+        consequence: Metabase proxy is unavailable
+        action: "`kubectl describe pod <podname>` -> `kubectl logs <podname>`"
+        summary: |-
+          No metabase-proxy pods are running in {{env}}
+      labels:
+        namespace: nada
+        severity: critical

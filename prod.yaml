@@ -4,3 +4,4 @@ ingress:
   - https://data.intern.nav.no/app
   - https://data.intern.nav.no/api/session/properties
   - https://data.intern.nav.no/api/public
+env: prod-gcp
