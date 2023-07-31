@@ -1,7 +1,7 @@
-host: metabase-inside.dev.intern.nav.no
+host: metabase-inside.intern.dev.nav.no
 ingress:
-  - https://data.dev.intern.nav.no/public
-  - https://data.dev.intern.nav.no/app
-  - https://data.dev.intern.nav.no/api/session/properties
-  - https://data.dev.intern.nav.no/api/public
-env: prod-gcp
+  - https://data.intern.dev.nav.no/public
+  - https://data.intern.dev.nav.no/app
+  - https://data.intern.dev.nav.no/api/session/properties
+  - https://data.intern.dev.nav.no/api/public
+env: dev-gcp
