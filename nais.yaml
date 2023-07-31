@@ -28,6 +28,10 @@ spec:
     requests:
       cpu: 50m
       memory: 128Mi
+  accessPolicy:
+    outbound:
+      external:
+        - host: {{host}}
 
 ---
 apiVersion: monitoring.coreos.com/v1
