@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
@@ -37,20 +38,18 @@ jobs:
     - uses: actions/checkout@v4
     - uses: nais/deploy/actions/deploy@v1
       env:
-        APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
         CLUSTER: dev-gcp
         RESOURCE: nais.yaml
         VARS: dev.yaml
   
   deploy-prod:
-    name: Deploy dev
+    name: Deploy prod
     needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: nais/deploy/actions/deploy@v1
       env:
-        APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
         CLUSTER: prod-gcp
         RESOURCE: nais.yaml
         VARS: prod.yaml
