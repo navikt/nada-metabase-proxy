@@ -1,39 +1,36 @@
-name: build and deploy
+name: Build, push, and deploy
 
 on:
   push:
     branches:
       - main
 
-permissions:
-  contents: read
-  packages: write
-  id-token: write
-
-env:
-  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
-
 jobs:
   build:
+    name: Build and push Docker container
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # Use commit-sha1 instead of tag for security concerns
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build docker image
-        run: docker build -t ${IMAGE} .
-      - name: Push docker image
-        run: docker push ${IMAGE}
+    - uses: actions/checkout@v4
+    - name: Push docker image to GAR
+      uses: nais/docker-build-push@v0
+      id: docker-build-push
+      with:
+        team: nada
+        identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }} # Provided as Organization Secret
+        project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }} # Provided as Organization Variable
 
   deploy-dev:
-    name: Deploy dev
+    name: Deploy to NAIS
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - uses: actions/checkout@v4
     - uses: nais/deploy/actions/deploy@v2
@@ -41,10 +38,13 @@ jobs:
         CLUSTER: dev-gcp
         RESOURCE: nais.yaml
         VARS: dev.yaml
-  
+        VAR: image=${{ needs.build.outputs.image }}
+
   deploy-prod:
     name: Deploy prod
-    needs: build
+    needs: 
+      - build
+      - deploy-dev
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -53,3 +53,4 @@ jobs:
         CLUSTER: prod-gcp
         RESOURCE: nais.yaml
         VARS: prod.yaml
+        VAR: image=${{ needs.build.outputs.image }}
